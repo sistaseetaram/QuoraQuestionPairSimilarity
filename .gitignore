@@ -1,2 +1,5 @@
 *.csv
 *.txt
+df_fe_stem_preprocessed_train.pkl
+df_fe_lemma_preprocessed_train.pkl
+df_fe_without_preprocessing_train.pkl
