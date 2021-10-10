@@ -5,3 +5,4 @@ df_fe_lemma_preprocessed_train.pkl
 df_fe_without_preprocessing_train.pkl
 nlp_final_train.pkl
 df_preprocessed.pkl
+text_objects.pkl
