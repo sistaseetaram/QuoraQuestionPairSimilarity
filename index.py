@@ -14,7 +14,6 @@ from nltk.corpus import stopwords
 from fuzzywuzzy import fuzz
 from scipy.sparse import hstack
 from tqdm import tqdm
-import base64
 
 # from EDA_ON_QQPS import Preprocessor
 # %%
@@ -22,28 +21,6 @@ import base64
 os.chdir('E:/Projects/QuoraQuestionPairSimilarity/')
 # %%
 # @st.cache
-@st.cache(allow_output_mutation=True)
-def get_base64_of_bin_file(bin_file):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-def set_png_as_page_bg(png_file):
-    bin_str = get_base64_of_bin_file(png_file)
-    page_bg_img = '''
-    <style>
-    body {
-    background-image: url("data:image/png;base64,%s");
-    background-size: cover;
-    }
-    </style>
-    ''' % bin_str
-    
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-    return
-
-set_png_as_page_bg('background.png')
-
 def load_data():
     # model = pk.load(urlopen(DATA_URL, 'rb'))    
     df=pd.read_pickle("nlp_final_train.pkl")
@@ -58,6 +35,9 @@ data_load_state =st.text('Loading Required dependencies...')
 df,model,tfidf = load_data()
 
 data_load_state.text("Model is ready!")
+
+# if 'ques' not in st.session_state:
+#     st.session_state['ques'] = ""
 
 # %%
 import re
@@ -322,15 +302,20 @@ def run(ques):
 
     disp=list(zip(top_5_proba,top_5))
     with st.expander("View similarity details"):
-        st.success('{} Similar questions found!'.format(len(disp)))
+        st.success('{}No.of similar questions found!'.format(len(disp)))
         st.write(disp)
         st.line_chart(np.sort(y_pred))
         st.text("Similarity of question asked with all questions in our database...")
 
+def update_ques():
+    st.write(st.session_state.ques)
 # %%
 unique_ques,total_ques = extract_unique(df)
 total_ques.sort_values(by="qid",inplace=True,ignore_index=True)
 unique_ques.sort_values(by="qid",inplace=True,ignore_index=True)
 st.header("Quora Question Pair Similarity Prototype")
-ques = st.text_area("",value= "Ask Question here...")
-st.button("Ask Question.",on_click=run,args=(ques,))
+st.text_area("",value= "Ask Question here...",key='ques',on_change=update_ques)
+st.button("Post Question!!",on_click=run,args=(st.session_state.ques,))
+# if st.button("Ask Question."):
+#     with st.expander(expanded=True):
+#         st.session_state.ques = st.text_area("",value= "Ask Question here...",on_change=update_ques,args=(st.session_state.ques,))
