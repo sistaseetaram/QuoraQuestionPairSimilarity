@@ -300,10 +300,10 @@ def run(ques):
     top_5_proba = y_pred[indices]
     top_5 = unique_ques.iloc[indices,1]
 
-    disp=list(zip(top_5_proba,top_5))
-    with st.expander("View similarity details"):
-        st.success('{}No.of similar questions found!'.format(len(disp)))
-        st.write(disp)
+    disp=list(zip(top_5,top_5_proba))[::-1]
+    with st.expander('See similar questions'):
+        st.info("See if your question matches any of the following")
+        st.table(disp)
         st.line_chart(np.sort(y_pred))
         st.text("Similarity of question asked with all questions in our database...")
 
@@ -314,7 +314,7 @@ unique_ques,total_ques = extract_unique(df)
 total_ques.sort_values(by="qid",inplace=True,ignore_index=True)
 unique_ques.sort_values(by="qid",inplace=True,ignore_index=True)
 st.header("Quora Question Pair Similarity Prototype")
-st.text_area("",value= "Ask Question here...",key='ques',on_change=update_ques)
+st.text_area("",value= "Ask here...",key='ques',on_change=update_ques)
 st.button("Post Question!!",on_click=run,args=(st.session_state.ques,))
 # if st.button("Ask Question."):
 #     with st.expander(expanded=True):
